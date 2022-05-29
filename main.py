@@ -235,6 +235,7 @@ def detect_image():
 		resp = jsonify({'message' : 'Detection failed'})
 		resp.status_code = 401
 		return resp
+	print(os.path.join(DETECT_OUT_DIR, newFileName))
 	resp = jsonify({
 		'message' : 'Detected successfull',
 		'outputUrl': os.path.join(DETECT_OUT_DIR, newFileName),

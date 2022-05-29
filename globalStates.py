@@ -1,8 +1,9 @@
 from datetime import datetime
 import json
+import time
 
 def nowTime():
-    return int(datetime.now().strftime('%s'))
+    return int(time.time())
 
 def updateAnyKey(statePath, fkey, fvalue):
     print('saving '+fkey+':'+fvalue)

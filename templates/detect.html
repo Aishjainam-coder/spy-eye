@@ -4,214 +4,216 @@
 <head>
 
 
-	<!-- Required meta tags -->
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
 
-	<link rel="stylesheet" href="/res/fonts/icomoon/style.css">
+    <link rel="stylesheet" href="/res/fonts/icomoon/style.css">
 
-	<link rel="stylesheet" href="/res/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/res/css/owl.carousel.min.css">
 
-	<!-- Bootstrap CSS -->
-	<link rel="stylesheet" href="/res/css/bootstrap.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/res/css/bootstrap.min.css">
 
-	<!-- Style -->
-	<link rel="stylesheet" href="c/res/ss/style.css">
-	<link rel="stylesheet" href="/res/css/toast.css">
-	<style>
-		div.preview-images>img {
-			width: 40%;
-		}
+    <!-- Style -->
+    <link rel="stylesheet" href="c/res/ss/style.css">
+    <link rel="stylesheet" href="/res/css/toast.css">
+    <style>
+        div.preview-images>img {
+            width: 40%;
+        }
+        
+        div.preview-images-detect>img {
+            width: 60%;
+        }
+        
+        div.box1 {
+            display: block;
+            padding: 10px;
+            margin-bottom: 20px;
+            /* SIMPLY SET THIS PROPERTY AS MUCH AS YOU WANT. This changes the space below box1 */
+            text-align: justify;
+        }
+        
+        div.center {
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    <script type="text/javascript" src="/res/js/json-to-table.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="/res/js/util.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(e) {
 
-		div.preview-images-detect>img {
-			width: 60%;
-		}
+            let imagesPreview = function(input, placeToInsertImagePreview) {
+                if (input.files) {
+                    let filesAmount = input.files.length;
+                    for (i = 0; i < filesAmount; i++) {
+                        let reader = new FileReader();
+                        reader.onload = function(event) {
+                            $($.parseHTML("<img>"))
+                                .attr("src", event.target.result)
+                                .appendTo(placeToInsertImagePreview);
+                        };
+                        reader.readAsDataURL(input.files[i]);
+                    }
+                }
+            };
+            $("#multifiles").on("change", function() {
+                imagesPreview(this, "div.preview-images");
+                // imagesPreview(this, "div.preview-images-detect");
+            });
+            getStats();
 
-		div.box1 {
-			display: block;
-			padding: 10px;
-			margin-bottom: 20px;
-			/* SIMPLY SET THIS PROPERTY AS MUCH AS YOU WANT. This changes the space below box1 */
-			text-align: justify;
-		}
+            function showToast(str = 'File uploaded', showPerm) {
+                var x = $("#snackbar");
+                x.text(str);
+                x.addClass("show");
+                if (!showPerm) {
+                    setTimeout(function() {
+                        x.removeClass('show');
+                    }, 3000);
+                }
+            }
 
-		div.center {
+            function hideToast() {
+                var x = $("#snackbar");
+                x.removeClass('show');
+            }
+            $('#upload').on('click', function() {
+                var form_data = new FormData();
+                var ins = document.getElementById('multifiles').files.length;
+                if (ins != 1) {
+                    showToast('Please select a file');
+                    // $('#msg').html('<span style="color:red">Select exactly one file</span>'); // TODO toaster
+                    return;
+                }
 
-			justify-content: center;
-			align-items: center;
+                for (var x = 0; x < ins; x++) {
+                    form_data.append("files[]", document.getElementById('multifiles').files[x]);
+                }
 
-		}
-	</style>
-	<script type="text/javascript" src="/res/js/json-to-table.js"></script>
-	<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-	<script type="text/javascript" src="/res/js/util.js"></script>
-	<script type="text/javascript">
-		$(document).ready(function (e) {
+                showToast('Loading...', true);
+                $.ajax({
+                    url: 'detect-image', // point to server-side URL
+                    dataType: 'json', // what to expect back from server
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: form_data,
+                    type: 'post',
+                    success: function(response) { // display success response
+                        hideToast();
 
-			let imagesPreview = function (input, placeToInsertImagePreview) {
-				if (input.files) {
-					let filesAmount = input.files.length;
-					for (i = 0; i < filesAmount; i++) {
-						let reader = new FileReader();
-						reader.onload = function (event) {
-							$($.parseHTML("<img>"))
-								.attr("src", event.target.result)
-								.appendTo(placeToInsertImagePreview);
-						};
-						reader.readAsDataURL(input.files[i]);
-					}
-				}
-			};
-			$("#multifiles").on("change", function () {
-				imagesPreview(this, "div.preview-images");
-				// imagesPreview(this, "div.preview-images-detect");
-			});
-			getStats();
-			function showToast(str='File uploaded',showPerm) {
-				var x = $("#snackbar");
-				x.text(str);
-				x.addClass("show");
-				if (!showPerm) {
-					setTimeout(function () { x.removeClass('show'); }, 3000);
-				}
-			}
-			function hideToast() {
-				var x = $("#snackbar");
-				x.removeClass('show');
-			}
-			$('#upload').on('click', function () {
-				var form_data = new FormData();
-				var ins = document.getElementById('multifiles').files.length;
-				if (ins != 1) {
-					showToast('Please select a file');
-					// $('#msg').html('<span style="color:red">Select exactly one file</span>'); // TODO toaster
-					return;
-				}
-
-				for (var x = 0; x < ins; x++) {
-					form_data.append("files[]", document.getElementById('multifiles').files[x]);
-				}
-
-				showToast('Loading...',true);
-				$.ajax({
-					url: 'detect-image', // point to server-side URL
-					dataType: 'json', // what to expect back from server
-					cache: false,
-					contentType: false,
-					processData: false,
-					data: form_data,
-					type: 'post',
-					success: function (response) { // display success response
-						hideToast();
-
-						var jsonHtmlTable = ConvertJsonToTable(response.detected.map(
-							person => ({'Name':person.name,'Confidence Score':person.confidence}) 
-						), 'jsonTable', null, 'Download');
-						console.log(jsonHtmlTable);
-						$('#tablede').html('</br>')
-						$('#tablede').append(jsonHtmlTable)
-						$('#msg').html('');
-						$.each(response, function (key, data) {
-							if (response[key] instanceof Array) { // TODO name.confidence display
-								$('#msg').append(key + ' length -> ' + response[key].length + '<br/>');
-								response[key].forEach((element) => {
-									$.each(element, function (nkey, nvalue) {
-										$('#msg').append(nkey + ' -> ' + nvalue + '<br/>');
-									})
-								});
-							} else if (key !== 'message') {
-								if (data.includes('/')) {
-									$($.parseHTML("<img>"))
-										.attr("src", data)
-										.appendTo("div.preview-images-detect");
-									// imagesPreview(this, "div.preview-images-detect")
-									$('#msg').append(key + ' -> ' + '<a src="' + data + '">' + data + '</a>' + '<br/>');
-								} else {
-									$('#msg').append(key + ' -> ' + data + '<br/>');
-								}
-							} else {
-								showToast(data);
-								// $('#msg').append(data + '<br/>');
-							}
-						})
-						getStats();
-					},
-					error: function (response) {
-						showToast(response.message);
-						// $('#msg').html(response.message); // display error response
-						getStats();
-					}
-				});
-			});
-		});
-	</script>
+                        var jsonHtmlTable = ConvertJsonToTable(response.detected.map(
+                            person => ({
+                                'Name': person.name,
+                                'Confidence Score': person.confidence
+                            })
+                        ), 'jsonTable', null, 'Download');
+                        console.log(jsonHtmlTable);
+                        $('#tablede').html('</br>')
+                        $('#tablede').append(jsonHtmlTable)
+                        $('#msg').html('');
+                        $.each(response, function(key, data) {
+                            if (response[key] instanceof Array) { // TODO name.confidence display
+                                $('#msg').append(key + ' length -> ' + response[key].length + '<br/>');
+                                response[key].forEach((element) => {
+                                    $.each(element, function(nkey, nvalue) {
+                                        $('#msg').append(nkey + ' -> ' + nvalue + '<br/>');
+                                    })
+                                });
+                            } else if (key !== 'message') {
+                                console.log(data, data.includes('\\'));
+                                if (data.includes('\\')) {
+                                    console.log('inside if');
+                                    $($.parseHTML("<img>"))
+                                        .attr("src", data)
+                                        .appendTo("div.preview-images-detect");
+                                    // imagesPreview(this, "div.preview-images-detect")
+                                    $('#msg').append(key + ' -> ' + '<a src="' + data + '">' + data + '</a>' + '<br/>');
+                                } else {
+                                    $('#msg').append(key + ' -> ' + data + '<br/>');
+                                }
+                            } else {
+                                showToast(data);
+                                // $('#msg').append(data + '<br/>');
+                            }
+                            getStats();
+                        })
+                    },
+                    error: function(response) {
+                        showToast(response.message);
+                        // $('#msg').html(response.message); // display error response
+                        getStats();
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 
 <body>
 
-	<div style="width: 100%; ">
+    <div style="width: 100%; ">
 
-		<div class=" align-items-center justify-content-center"
-			style="width: 50%; height: 800px; float: left; background-color: rgb(239, 245, 245); justify-items: center; align-items: center; margin:0 auto;">
-			<div class="box1"></div>
-			<div id="snackbar"></div>
-			<div class="half">
-				<div class="bg order-1 order-md-2" style="background-color: rgb(239, 245, 245);">
-					<div class="contents order-1 order-md-2">
-						
-						<div class="container form-group first" style="margin: 20px;">
-							<div class="form-group first">
-								<h2 style="color: rgb(22, 11, 11); align-items: center;">Detect Most Wanted Person </h2>
-							</div>
-							<div class="form-group first">
-								<h6 style="color: rgb(22, 11, 11); align-items: center;">Select Atleast one image to
-									detect
-									Wanted Person*
-								</h6>
-							</div>
-							<div class="form-group first">
-								<input
-									style="background-color: white; width: 400px; align-self: center; align-items: center;"
-									type="file" name="files[]" id="multifiles" class="form-control-file border" />
-								<div class="row">
-									<div class="col-sm-12">
-										<div class="preview-images"></div>
-									</div>
-								</div>
-							</div>
-							<div class="form-group last mb-3">
-								<button id="upload" type="submit" class="btn btn-primary">Detect Person</button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+        <div class=" align-items-center justify-content-center" style="width: 50%; height: 800px; float: left; background-color: rgb(239, 245, 245); justify-items: center; align-items: center; margin:0 auto;">
+            <div class="box1"></div>
+            <div id="snackbar"></div>
+            <div class="half">
+                <div class="bg order-1 order-md-2" style="background-color: rgb(239, 245, 245);">
+                    <div class="contents order-1 order-md-2">
 
-		</div>
+                        <div class="container form-group first" style="margin: 20px;">
+                            <div class="form-group first">
+                                <h2 style="color: rgb(22, 11, 11); align-items: center;">Detect Most Wanted Person </h2>
+                            </div>
+                            <div class="form-group first">
+                                <h6 style="color: rgb(22, 11, 11); align-items: center;">Select Atleast one image to detect Wanted Person*
+                                </h6>
+                            </div>
+                            <div class="form-group first">
+                                <input style="background-color: white; width: 400px; align-self: center; align-items: center;" type="file" name="files[]" id="multifiles" class="form-control-file border" />
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="preview-images"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group last mb-3">
+                                <button id="upload" type="submit" class="btn btn-primary">Detect Person</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
 
 
 
-		<div style="margin-left: 50%; height:  800px; ">
-			<div style="height: 250px; background-image: url('/res/images/wanted_txt_img.webp'); "></div>
-			<div>
-				<!-- <div style="height: 20px; background-color: rgb(21, 185, 146);  ">Detect Person Name
+        <div style="margin-left: 50%; height:  800px; ">
+            <div style="height: 250px; background-image: url('/res/images/wanted_txt_img.webp'); "></div>
+            <div>
+                <!-- <div style="height: 20px; background-color: rgb(21, 185, 146);  ">Detect Person Name
 					
 				</div> -->
-				</br>
-				<div class=" align-items-center justify-content-center">
-					<div id="tablede"></div>
-				</div>
+                </br>
+                <div class=" align-items-center justify-content-center">
+                    <div id="tablede"></div>
+                </div>
 
-				<!-- <button type="submit" class="btn btn-primary">Detect Person Name</button> -->
-				<div class="row">
-					<div class="col-sm-12">
-						<div class="preview-images-detect"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                <!-- <button type="submit" class="btn btn-primary">Detect Person Name</button> -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="preview-images-detect"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 </body>
