@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/res/fonts/icomoon/style.css">
+
+    <link rel="stylesheet" href="/res/css/owl.carousel.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/res/css/bootstrap.min.css">
+
+    <!-- Style -->
+    <link rel="stylesheet" href="/res/css/style.css">
+
+    <title>Report Wanted Person</title>
+    <link rel="stylesheet" href="/res/css/toast.css">
+    <script src="/res/js/jquery-3.3.1.min.js"></script>
+    <script src="/res/js/popper.min.js"></script>
+    <script src="/res/js/bootstrap.min.js"></script>
+    <script src="/res/js/main.js"></script>
+    <script type="text/javascript" src="/res/js/util.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function (e) {
+            $("#formcheck").hide();
+            getStats();
+            $('#upload').on('click', function () {
+                var form_data = new FormData();
+                var ins = document.getElementById('multifiles').files.length;
+                var personName = document.getElementById('person').value.trim();
+                if (personName.length <= 0) {
+                    $('#msg').html('<span style="color:red">Person name is mandatory.</span>');
+                    return;
+                }
+                if (ins == 0) {
+                    $('#msg').html('<span style="color:red">Select at least one file</span>');
+                    return;
+                }
+
+                for (var x = 0; x < ins; x++) {
+                    form_data.append("files[]", document.getElementById('multifiles').files[x]);
+                }
+
+                $.ajax({
+                    url: 'python-flask-files-upload?person_name=' + personName, // point to server-side URL
+                    dataType: 'json', // what to expect back from server
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: form_data,
+                    type: 'post',
+                    success: function (response) { // display success response
+                        $('#msg').html('');
+                        $.each(response, function (key, data) {
+                            if (key !== 'message') {
+                                $('#msg').append(key + ' -> ' + data + '<br/>');
+                            } else {
+                                //upload msg show here 
+
+                                viewSetupAfterRegistration();
+                                showToast();
+                                $('#msg').append(data + '<br/>');
+                            }
+                        })
+                        getStats();
+                    },
+                    error: function (response) {
+                        $('#msg').html(response.message); // display error response
+                        getStats();
+                    }
+                });
+            });
+            $('#train').on('click', function () {
+                $.ajax({
+                    url: 'train',
+                    dataType: 'json',
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    type: 'post',
+                    success: (...args) => {
+                        console.log(...args);
+                        getStats();
+                    },
+                    error: (...args) => {
+                        console.error(...args);
+                        getStats();
+                    },
+                });
+            })
+
+            function showToast() {
+                var x = document.getElementById("snackbar");
+                x.className = "show";
+                setTimeout(function () {
+                    x.className = x.className.replace("show", "checkk");
+                }, 3000);
+
+            }
+
+            function viewSetupAfterRegistration() {
+                $("#msg").hide();
+                $("#header").hide();
+                $("#form1").hide();
+                $("#formcheck").show();
+            }
+
+            function viewSetupUploadAgain() {
+                $("#msg").hide();
+                $("#header").show();
+                $("#form1").show();
+                $("#formcheck").hide();
+            }
+            $('#upload_again').on('click', viewSetupUploadAgain);
+        });
+    </script>
+</head>
+
+
+<body>
+
+    <!-- <div class="hero_bg_box">
+        <div class="img-box">
+            <img src="/res/images/bg_1.jpg" alt="">
+        </div>
+    </div> -->
+    <div style="width: 100%; ">
+
+        <div
+            style="width: 50%; height: 800px; float: left; background-color: rgb(239, 245, 245); justify-items: center; align-items: center; margin:0 auto;">
+            <div class="half">
+                <div class="bg order-1 order-md-2" style="background-color: rgb(239, 245, 245);">
+                    <div class="contents order-1 order-md-2">
+
+                        <div class="container" style="margin: 20px;">
+                            <div class="row align-items-center justify-content-center">
+                                <div class="col-md-7">
+
+                                    <h3><strong>Upload Wanted Person Info:</strong></h3>
+                                    <p class="mb-4">Hii this is a Face Recognition technology from which you can find any
+                                        wanted
+                                        person.
+                                    </p>
+
+                                    <p id="msg"></p>
+                                    <div class="contents order-1order-md-7 ">
+
+                                        <div class="container">
+                                            <div class="row align-items-center justify-content-center">
+                                                <div class="col-md-7">
+                                                </div>
+                                                <div id="snackbar">File Uploaded sucessfuly</div>
+                                                <div id="form1">
+                                                    <div class="form-group first">
+                                                        <label for="name of wanted person">Name of Wanted
+                                                            Person*</label>
+                                                        <input type="text" class="form-control " placeholder="Name "
+                                                            id="person" name="person" />
+                                                    </div>
+                                                    <div class="form-group">
+
+                                                        <input type="file" id="multifiles" name="files[]"
+                                                            multiple="multiple" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="name of wanted person">Rewards(If any)</label>
+                                                        <br/>
+                                                        <input type="text" id="reward" name="reward"
+                                                            placeholder="Reward Amount" />
+
+                                                    </div>
+
+
+                                                    <div class="form-group last mb-3">
+                                                        <button id="upload" class="btn btn-block btn-primary">Submit Report
+                                                    </button>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <div id="formcheck" class="row align-items-cente justify-content-center">
+                                                <button id="upload_again" class="btn btn-block btn-primary">Upload
+                                                    Another
+                                                    Person</button>
+                                                <button id="detect" class="btn btn-block btn-primary">Detect Registered Person</button>
+
+                                            </div>
+                                            <p id="stats"></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div> ̰
+                </div>
+            </div>
+        </div>
+        <div
+            style="width: 50%; height: 800px; float: left; background-image: url('/res/images/header_wanted_person.jpeg'); justify-items: center; align-items: center; margin:0 auto;">
+
+        </div>
+    </div>
+
+</body>
+
+</html>
