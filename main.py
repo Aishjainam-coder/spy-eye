@@ -155,7 +155,7 @@ def html_video():
 	# print(result.decode('utf-8'))
 	# print(error.decode('utf-8'))
 	try:
-		os.system('python video_detect.py &')
+		os.system('START /B python video_detect.py ')
 		print('subprocess open')
 	except:
 		print('process not called')
