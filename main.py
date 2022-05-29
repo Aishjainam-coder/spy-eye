@@ -293,14 +293,14 @@ def upload_file():
 def signal_handler(sig, frame):
 	print('application terminated.')
 	# PROCNAME = "python.exe"
-	for proc in psutil.process_iter():
+	# for proc in psutil.process_iter():
 		# check whether the process name matches
-		print('ps name',proc.name())
-		if proc.name() == 'python3.10':
-			print('ps name -- py',proc.name())
-			print(proc)
-			proc.kill()
-	sys.exit(0)
+		# print('ps name',proc.name())
+		# if proc.name() == 'python3.10':
+			# print('ps name -- py',proc.name())
+			# print(proc)
+			# proc.kill()
+	# sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
 # print('Press Ctrl+C')
