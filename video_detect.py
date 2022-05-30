@@ -1,4 +1,5 @@
 import os
+import time
 from flask import Flask, Response
 import cv2
 from faceRec.tester import reuseTrainingData
@@ -35,7 +36,8 @@ print(dictName)
 
 
 app = Flask(__name__)
-video = cv2.VideoCapture(0)
+video = cv2.VideoCapture(0) 
+time.sleep(1.000)
 face_cascade = cv2.CascadeClassifier()
 face_cascade.load(cv2.samples.findFile("faceRec/HaarCascade/haarcascade_frontalface_default.xml"))
 
@@ -77,7 +79,7 @@ def gen(video):
                 1,
                 (255, 0, 0),
                 3)
-            if confidence < 50:
+            if confidence < 65:
                 cv2.putText(image,preName,(x,y),cv2.FONT_HERSHEY_DUPLEX,2,(255,0,0),4)
         ret, jpeg = cv2.imencode('.jpg', image)
 

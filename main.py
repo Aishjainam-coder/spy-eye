@@ -155,7 +155,7 @@ def html_video():
 	# print(result.decode('utf-8'))
 	# print(error.decode('utf-8'))
 	try:
-		os.system('python video_detect.py &')
+		os.system('START /B python video_detect.py ')
 		print('subprocess open')
 	except:
 		print('process not called')
@@ -235,6 +235,7 @@ def detect_image():
 		resp = jsonify({'message' : 'Detection failed'})
 		resp.status_code = 401
 		return resp
+	print(os.path.join(DETECT_OUT_DIR, newFileName))
 	resp = jsonify({
 		'message' : 'Detected successfull',
 		'outputUrl': os.path.join(DETECT_OUT_DIR, newFileName),

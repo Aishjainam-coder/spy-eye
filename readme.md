@@ -1,5 +1,8 @@
 # Wanted person tracking system
 
+## DEMO with video survillence
+coming soon by 1 PM, 30 May 2022
+
 ### prerequisite
 * python version should be 3.9 or above
 
